@@ -1,0 +1,295 @@
+ASSIGNMENT QUESTIONS :
+mysql> CREATE TABLE Students (student_id INT PRIMARY KEY, name VARCHAR(100), age INT);CREATE TABLE Courses (course_id INT PRIMARY KEY, course_name VARCHAR(100));CREATE TABLE Enrollments (enrollment_id INT PRIMARY KEY, student_id INT, course_id INT); INSERT INTO Students VALUES(1, 'Arjun', 20), (2, 'Bhavana', 21), (3, 'Charan', 22), (4, 'Divya', 20),(5, 'Eswar', 23), (6, 'Farhan', 21), (7, 'Gowri', 22); INSERT INTO Courses VALUES(101, 'Mathematics'), (102, 'Physics'), (103, 'Biology'), (104, 'Chemistry'), (105, 'Computer Science'); INSERT INTO Enrollments VALUES(1, 1, 101), (2, 2, 101), (3, 2, 102), (4, 3, 103),(5, 4, 101), (6, 5, 104), (7, 1, 102), (8, 6, 105);
+
+mysql> SELECT*FROM STUDENTS;
++------------+---------+------+
+| student_id | name    | age  |
++------------+---------+------+
+|          1 | Arjun   |   20 |
+|          2 | Bhavana |   21 |
+|          3 | Charan  |   22 |
+|          4 | Divya   |   20 |
+|          5 | Eswar   |   23 |
+|          6 | Farhan  |   21 |
+|          7 | Gowri   |   22 |
++------------+---------+------+
+7 rows in set (0.01 sec)
+mysql> SELECT*FROM COURSES;
++-----------+------------------+
+| course_id | course_name      |
++-----------+------------------+
+|       101 | Mathematics      |
+|       102 | Physics          |
+|       103 | Biology          |
+|       104 | Chemistry        |
+|       105 | Computer Science |
++-----------+------------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT*FROM ENROLLMENTS;
++---------------+------------+-----------+
+| enrollment_id | student_id | course_id |
++---------------+------------+-----------+
+|             1 |          1 |       101 |
+|             2 |          2 |       101 |
+|             3 |          2 |       102 |
+|             4 |          3 |       103 |
+|             5 |          4 |       101 |
+|             6 |          5 |       104 |
+|             7 |          1 |       102 |
+|             8 |          6 |       105 |
++---------------+------------+-----------+
+8 rows in set (0.00 sec)
+
+QUESTIONS ;
+
+Get names of students enrolled in the "Physics" course.
+
+List all students with their courses (if enrolled).
+
+Show all courses and the students who enrolled (even if none).
+
+Display all students with course details, even if some courses have no enrollments.
+
+List all students and all courses, even if there is no match (simulate full join).
+
+Show pairs of students who have the same age.
+
+Count how many students are enrolled in each course.
+
+Show number of courses each student is enrolled in.
+
+
+List all students and courses ordered by student name.
+
+Show student names and course names ordered by course name.
+
+Show only courses with more than 1 student enrolled.
+
+List students enrolled in more than 1 course.
+
+Display student names and count of enrollments, ordered by highest enrollment.
+
+mysql> SELECT S.NAME
+    -> FROM STUDENTS S
+    -> JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID
+    -> WHERE C.COURSE_NAME='PHYSICS';
++---------+
+| NAME    |
++---------+
+| Bhavana |
+| Arjun   |
++---------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT S.NAME,C.COURSE_NAME
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> LEFT JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID;
++---------+------------------+
+| NAME    | COURSE_NAME      |
++---------+------------------+
+| Arjun   | Physics          |
+| Arjun   | Mathematics      |
+| Bhavana | Physics          |
+| Bhavana | Mathematics      |
+| Charan  | Biology          |
+| Divya   | Mathematics      |
+| Eswar   | Chemistry        |
+| Farhan  | Computer Science |
+| Gowri   | NULL             |
++---------+------------------+
+9 rows in set (0.02 sec)
+
+mysql> SELECT C.COURSE_NAME,S.NAME
+    -> FROM COURSES C
+    -> LEFT JOIN ENROLLMENTS E ON C.COURSE_ID=E.COURSE_ID
+    -> LEFT JOIN STUDENTS S ON E.STUDENT_ID=S.STUDENT_ID;
++------------------+---------+
+| COURSE_NAME      | NAME    |
++------------------+---------+
+| Mathematics      | Divya   |
+| Mathematics      | Bhavana |
+| Mathematics      | Arjun   |
+| Physics          | Arjun   |
+| Physics          | Bhavana |
+| Biology          | Charan  |
+| Chemistry        | Eswar   |
+| Computer Science | Farhan  |
++------------------+---------+
+8 rows in set (0.01 sec)
+
+mysql> SELECT S.NAME,C.COURSE_NAME
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> LEFT JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID;
++---------+------------------+
+| NAME    | COURSE_NAME      |
++---------+------------------+
+| Arjun   | Physics          |
+| Arjun   | Mathematics      |
+| Bhavana | Physics          |
+| Bhavana | Mathematics      |
+| Charan  | Biology          |
+| Divya   | Mathematics      |
+| Eswar   | Chemistry        |
+| Farhan  | Computer Science |
+| Gowri   | NULL             |
++---------+------------------+
+9 rows in set (0.01 sec)
+
+mysql> SELECT S.NAME,C.COURSE_NAME
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> LEFT JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID
+    -> UNION
+    -> SELECT S.NAME,C.COURSE_NAME
+    -> FROM COURSES C
+    -> LEFT JOIN ENROLLMENTS E ON C.COURSE_ID=E.COURSE_ID
+    -> LEFT JOIN STUDENTS S ON E.STUDENT_ID=S.STUDENT_ID;
++---------+------------------+
+| NAME    | COURSE_NAME      |
++---------+------------------+
+| Arjun   | Physics          |
+| Arjun   | Mathematics      |
+| Bhavana | Physics          |
+| Bhavana | Mathematics      |
+| Charan  | Biology          |
+| Divya   | Mathematics      |
+| Eswar   | Chemistry        |
+| Farhan  | Computer Science |
+| Gowri   | NULL             |
++---------+------------------+
+9 rows in set (0.05 sec)
+
+mysql> SELECT S1.NAME AS STUDENT1,
+    -> S2.NAME AS STUDENT_2,
+    -> S1.AGE
+    -> FROM STUDENTS S1
+    -> JOIN STUDENTS S2
+    -> ON S1.AGE=S2.AGE
+    -> AND S1.STUDENT_ID<S2.STUDENT_ID;
++----------+-----------+------+
+| STUDENT1 | STUDENT_2 | AGE  |
++----------+-----------+------+
+| Arjun    | Divya     |   20 |
+| Bhavana  | Farhan    |   21 |
+| Charan   | Gowri     |   22 |
++----------+-----------+------+
+3 rows in set (0.03 sec)
+
+mysql> SELECT c.course_name, COUNT(e.student_id) AS student_count
+    -> FROM courses c
+    -> LEFT JOIN enrollments e ON c.course_id = e.course_id
+    -> GROUP BY c.course_id, c.course_name;
++------------------+---------------+
+| course_name      | student_count |
++------------------+---------------+
+| Mathematics      |             3 |
+| Physics          |             2 |
+| Biology          |             1 |
+| Chemistry        |             1 |
+| Computer Science |             1 |
++------------------+---------------+
+5 rows in set (0.07 sec)
+
+mysql> SELECT S.NAME,COUNT(E.COURSE_ID)AS COURSE_COUNT
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> GROUP BY S.STUDENT_ID,S.NAME;
++---------+--------------+
+| NAME    | COURSE_COUNT |
++---------+--------------+
+| Arjun   |            2 |
+| Bhavana |            2 |
+| Charan  |            1 |
+| Divya   |            1 |
+| Eswar   |            1 |
+| Farhan  |            1 |
+| Gowri   |            0 |
++---------+--------------+
+7 rows in set (0.01 sec)
+
+mysql> SELECT S.NAME,C.COURSE_NAME
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> LEFT JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID
+    -> ORDER BY S.NAME;
++---------+------------------+
+| NAME    | COURSE_NAME      |
++---------+------------------+
+| Arjun   | Physics          |
+| Arjun   | Mathematics      |
+| Bhavana | Physics          |
+| Bhavana | Mathematics      |
+| Charan  | Biology          |
+| Divya   | Mathematics      |
+| Eswar   | Chemistry        |
+| Farhan  | Computer Science |
+| Gowri   | NULL             |
++---------+------------------+
+9 rows in set (0.02 sec)
+
+mysql> SELECT S.NAME,C.COURSE_NAME
+    -> FROM STUDENTS S
+    -> JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> JOIN COURSES C ON E.COURSE_ID=C.COURSE_ID
+    -> ORDER BY C.COURSE_NAME;
++---------+------------------+
+| NAME    | COURSE_NAME      |
++---------+------------------+
+| Charan  | Biology          |
+| Eswar   | Chemistry        |
+| Farhan  | Computer Science |
+| Arjun   | Mathematics      |
+| Bhavana | Mathematics      |
+| Divya   | Mathematics      |
+| Bhavana | Physics          |
+| Arjun   | Physics          |
++---------+------------------+
+8 rows in set (0.01 sec)
+
+mysql> SELECT c.course_name, COUNT(e.student_id) AS student_count
+    -> FROM courses c
+    -> JOIN enrollments e ON c.course_id = e.course_id
+    -> GROUP BY c.course_id, c.course_name
+    -> HAVING COUNT(e.student_id) > 1;
++-------------+---------------+
+| course_name | student_count |
++-------------+---------------+
+| Mathematics |             3 |
+| Physics     |             2 |
++-------------+---------------+
+2 rows in set (0.04 sec)
+
+mysql> SELECT S.NAME,COUNT(E.COURSE_ID)AS COURSE_COUNT
+    -> FROM STUDENTS S
+    -> JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> GROUP BY S.STUDENT_ID,S.NAME
+    -> HAVING COUNT(E.COURSE_ID)>1;
++---------+--------------+
+| NAME    | COURSE_COUNT |
++---------+--------------+
+| Arjun   |            2 |
+| Bhavana |            2 |
++---------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT S.NAME,COUNT(E.COURSE_ID) AS ENROLLMENT_COUNT
+    -> FROM STUDENTS S
+    -> LEFT JOIN ENROLLMENTS E ON S.STUDENT_ID=E.STUDENT_ID
+    -> GROUP BY S.STUDENT_ID,S.NAME
+    -> ORDER BY ENROLLMENT_COUNT DESC;
++---------+------------------+
+| NAME    | ENROLLMENT_COUNT |
++---------+------------------+
+| Arjun   |                2 |
+| Bhavana |                2 |
+| Charan  |                1 |
+| Divya   |                1 |
+| Eswar   |                1 |
+| Farhan  |                1 |
+| Gowri   |                0 |
++---------+------------------+
+7 rows in set (0.01 sec)
